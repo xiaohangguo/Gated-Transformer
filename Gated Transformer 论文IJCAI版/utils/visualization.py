@@ -54,7 +54,7 @@ def result_visualization(loss_list: list,
                               f'最大correct对应的已训练epoch数:{(correct_on_test.index(max(correct_on_test)) + 1) * test_interval}' '    '
                               f'最后一轮correct：{correct_on_test[-1]}%' '\n'
                               f'd_model={d_model}   q={q}   v={v}   h={h}   N={N}  drop_out={dropout}'  '\n'
-                              f'共耗时{round(time_cost, 2)}分钟', FontProperties=my_font)
+                              f'共耗时{round(time_cost, 2)}分钟', fontproperties=my_font)
 
     # 保存结果图   测试不保存图（epoch少于draw_key）
     if EPOCH >= draw_key:

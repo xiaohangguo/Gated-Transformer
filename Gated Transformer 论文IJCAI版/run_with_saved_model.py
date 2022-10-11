@@ -30,9 +30,9 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # Wafer length=803  input=997 channel=4
 
 # 选择要跑的模型
-save_model_path = 'saved_model/ECG 91.0 batch=2.pkl'
+save_model_path = 'saved_model/mts(3) 97.02 batch=125.pkl'
 file_name = save_model_path.split('/')[-1].split(' ')[0]
-path = f'E:\PyCharmWorkSpace\\dataset\\MTS_dataset\\{file_name}\\{file_name}.mat'  # 拼装数据集路径
+path = f'/media/hang/data/GTN/Gated Transformer 论文IJCAI版/mts(4).mat'  # 拼装数据集路径
 
 # 绘制HeatMap的命名准备工作
 ACCURACY = save_model_path.split('/')[-1].split(' ')[1]  # 使用的模型的准确率
@@ -42,7 +42,7 @@ gather_or_not = False  # 是否绘制单个样本的step和channel上的聚类�
 gather_all_or_not = True  # 是否绘制所有样本在特征提取后的聚类图
 
 # 加载模型
-net = torch.load(save_model_path, map_location=torch.device('cpu'))  # map_location 设置使用的设备，可能是因为原来的pkl是在colab上用GPU跑的
+net = torch.load(save_model_path, map_location=torch.device('cuda'))  # map_location 设置使用的设备，可能是因为原来的pkl是在colab上用GPU跑的
 # 加载测试集数据
 test_dataset = MyDataset(path, 'test')
 test_dataloader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=False)
@@ -88,8 +88,8 @@ with torch.no_grad():
         correct += (label_index == y.long()).sum().item()
 
     if gather_all_or_not:
-        all_sample_X = torch.cat(all_sample_X, dim=0).numpy()
-        all_sample_Y = torch.cat(all_sample_Y, dim=0).numpy()
+        all_sample_X = torch.cat(all_sample_X, dim=0).cpu().numpy()
+        all_sample_Y = torch.cat(all_sample_Y, dim=0).cpu().numpy()
         print('正在绘制gather图...')
         gather_all_by_tsne(all_sample_X, all_sample_Y, test_dataset.output_len, file_name+' all_sample_gather')
         print('gather图绘制完成！')

@@ -32,26 +32,26 @@ reslut_figure_path = 'result_figure'  # 结果图像保存路径
 # path = 'E:\PyCharmWorkSpace\\dataset\\MTS_dataset\\NetFlow\\NetFlow.mat'  # lenth=803  input=997 channel=4 output=只有1和13
 # path = 'E:\PyCharmWorkSpace\\dataset\\MTS_dataset\\ArabicDigits\\ArabicDigits.mat'  # lenth=6600  input=93 channel=13 output=10
 # path = 'E:\PyCharmWorkSpace\\dataset\\MTS_dataset\\PEMS\\PEMS.mat'
-# path = 'E:\PyCharmWorkSpace\\dataset\\MTS_dataset\\Wafer\\Wafer.mat'
-path = 'E:\PyCharmWorkSpace\dataset\\MTS_dataset\\WalkvsRun\\WalkvsRun.mat'
+#path = '/home/hang/桌面/GTN/Gated Transformer 论文IJCAI版/ArabicDigits.mat'
+path = '/media/hang/data/GTN/Gated Transformer 论文IJCAI版/mts(6).mat'
 
-test_interval = 5  # 测试间隔 单位：epoch
+test_interval = 10  # 测试间隔 单位：epoch
 draw_key = 1  # 大于等于draw_key才会保存图像
-file_name = path.split('\\')[-1][0:path.split('\\')[-1].index('.')]  # 获得文件名字
+file_name = path.split('/')[-1][0:path.split('/')[-1].index('.')]  # 获得文件名字
 
 # 超参数设置
-EPOCH = 100
-BATCH_SIZE = 3
-LR = 1e-4
+EPOCH = 200
+BATCH_SIZE = 250
+LR = 1e-3
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # 选择设备 CPU or GPU
 print(f'use device: {DEVICE}')
 
-d_model = 512
-d_hidden = 1024
-q = 8
-v = 8
-h = 8
-N = 8
+d_model = 32
+d_hidden = 64
+q = 2
+v = 2
+h = 2
+N = 2
 dropout = 0.2
 pe = True  # # 设置的是双塔中 score=pe score=channel默认没有pe
 mask = True  # 设置的是双塔中 score=input的mask score=channel默认没有mask
@@ -60,6 +60,7 @@ optimizer_name = 'Adagrad'
 
 train_dataset = MyDataset(path, 'train')
 test_dataset = MyDataset(path, 'test')
+
 train_dataloader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 test_dataloader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
@@ -98,10 +99,19 @@ def test(dataloader, flag='test_set'):
     total = 0
     with torch.no_grad():
         net.eval()
+
         for x, y in dataloader:
             x, y = x.to(DEVICE), y.to(DEVICE)
             y_pre, _, _, _, _, _, _ = net(x, 'test')
             _, label_index = torch.max(y_pre.data, dim=-1)
+            # from collections import Counter
+            # label_num = Counter(y_pre)
+            # batt_good = label_num['1'] #预测为好电池的个数
+            # batt_bad = label_num['2']#预测为坏电池的个数
+            # list1 = []
+            # list1.append(y_pre)
+            # import pandas as pd
+            # pd.DataFrame(list1).to_csv("result.csv",index=None)
             total += label_index.shape[0]
             correct += (label_index == y.long()).sum().item()
         if flag == 'test_set':
@@ -160,5 +170,13 @@ def train():
                          optimizer_name=optimizer_name, LR=LR, pe=pe, mask=mask)
 
 
+# def pre():
+#     model_v = Transformer()
+#     model_v.eval()
+#     path_valid = ""
+#     valid_datasets = MyDataset(path_valid, 'test')
+#     result_vilid = []
+#     for valid_label in
 if __name__ == '__main__':
     train()
+    #test("./ArabicDigits.mat")
